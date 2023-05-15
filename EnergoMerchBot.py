@@ -60,7 +60,6 @@ async def background_job_refresh_data() -> None:
 async def show_start(message: types.Message):
     new_first_markup = create_standard_markup('', find_trie.get_children(''))
     await message.answer(text='Выберите свою территорию или пришлите ее название', reply_markup=new_first_markup)
-    #await message.answer(text='Выберите свою территорию или пришлите ее название', reply_markup=first_markup)
 
 
 def create_button(text: str, data, button_prefix=BUTTON_PREFIX):
@@ -72,7 +71,6 @@ def create_reply_markup(data: str) -> Any:
     """Return an inline keyboard markup with one button"""
     reply_markup = InlineKeyboardMarkup()
     button = create_button('Повторить последний запрос', data)
-    #button = InlineKeyboardButton(text='Повторить последний запрос', callback_data=f'{button_prefix}{data}')
     reply_markup.add(button)
     return reply_markup
 
@@ -93,24 +91,15 @@ def create_standard_markup(query: str, children) -> Any:
 async def process_callbacks(callback_query: types.CallbackQuery):
     """Handling a response to a button click"""
     await callback_query.answer(callback_query.id)
-    if not callback_query.data.startswith(button_prefix):
+    if not callback_query.data.startswith(BUTTON_PREFIX):
         await bot.send_message(callback_query.from_user.id,
                                text='Устаревшая версия кнопок, сотрите историю и начните заново')
         return
-    query = callback_query.data[len(button_prefix):].strip('_')
-    second_markup = InlineKeyboardMarkup(row_width=3)
+    query = callback_query.data[len(BUTTON_PREFIX):].strip('_')
     children = find_trie.get_children(GNS.reverse_replace(query))
     if len(children) > 0:
-        for i in range(0, len(children)):
-            element = children[i]
-            button = InlineKeyboardButton(text=element, callback_data=f'{button_prefix}{query}_{GNS.get_forward(element)}')
-            if i % 3 == 0:
-                second_markup.add(button)
-            else:
-                second_markup.insert(button)
         new_markup = create_standard_markup(query, children)
         await bot.send_message(callback_query.from_user.id, text=GNS.reverse_replace(query), reply_markup=new_markup)
-        #await bot.send_message(callback_query.from_user.id, text=GNS.reverse_replace(query), reply_markup=second_markup)
     else:
         reply_markup = create_reply_markup(query)
         territory_index = find_trie.get_index(GNS.reverse_replace(query))
@@ -134,8 +123,4 @@ if __name__ == '__main__':
                         format='%(asctime)s %(name)s %(levelname)s %(message)s',
                         datefmt='%H:%M:%S')
     update_data_frame(start=True)
-    button_prefix = BUTTON_PREFIX
-    first_markup = InlineKeyboardMarkup()
-    for el in find_trie.get_children(''):
-        first_markup.add(InlineKeyboardButton(text=el, callback_data=button_prefix + GNS.get_forward(el)))
     executor.start_polling(dp, skip_updates=True, on_startup=on_bot_start_up)
