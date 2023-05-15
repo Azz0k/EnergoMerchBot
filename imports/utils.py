@@ -1,10 +1,17 @@
 from typing import Any
 import pandas as pd
 from imports.Trie import Trie
+from imports.NameSystem import NameSystem
+import math
 
 
-def convert_to_string(arg_list: list) -> str:
-    result = """<b>Кофе-{2:.0%}</b>
+def convert_to_string(name, arg_list: list) -> str:
+    arg_list = [0 if math.isnan(x) else x for x in arg_list]
+    arg_list.append(name)
+    result = """
+<b>{24}</b>
+
+<b>Кофе-{2:.0%}</b>
 План-{0}
 Факт-{1}
 <b>Кондитерские изделия-{5:.0%}</b>
@@ -29,7 +36,7 @@ def convert_to_string(arg_list: list) -> str:
 План-{21}
 Факт-{22}
 """
-    return result.format(*arg_list).replace('nan', '0')
+    return result.format(*arg_list)
 
 
 def test_convert_to_string():
@@ -42,13 +49,14 @@ def test_convert_to_string():
                   'животных-2300%</b>\nПлан-21\nФакт-22\n'
 
 
-def get_data_from_file(file_name: str, trie: Trie) -> Any:
+def get_data_from_file(file_name: str, trie: Trie, global_name_system: NameSystem) -> Any:
     df = pd.read_excel(file_name)
     del df['Unnamed: 0']
     del df['Unnamed: 1']
     del df['DSM']
     del df['SV']
     for i in range(1, len(df['МС'])):
+        global_name_system.add_string_to_ns(df['МС'][i].strip())
         trie.insert(df['МС'][i].strip(), i)
     return df
 
