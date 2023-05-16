@@ -7,7 +7,7 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from imports.utils import *
 from imports.config import *
-from imports.NameSystem import NameSystem
+from imports.TwoWayDict import TwoWayDict
 
 
 class Support:
@@ -15,7 +15,7 @@ class Support:
     def __init__(self):
         self.find_trie = Trie()
         self.data_frame = None
-        self.GNS = NameSystem()
+        self.name_vs_id = TwoWayDict()
 
     def get_data_from_file(self, file_name: str) -> Any:
         df = pd.read_excel(file_name)
@@ -25,7 +25,7 @@ class Support:
         del df['DSM']
         del df['SV']
         for i in range(1, len(df['МС'])):
-            self.GNS.add_string_to_ns(df['МС'][i].strip())
+            self.name_vs_id.split_string_and_add(df['МС'][i].strip())
             trie.insert(df['МС'][i].strip(), i)
         self.data_frame = df
         return trie
@@ -63,7 +63,7 @@ class Support:
         for i in range(0, len(children)):
             element = children[i]
             button = InlineKeyboardButton(text=element,
-                                          callback_data=f'{BUTTON_PREFIX}{query}_{self.GNS.get_forward(element)}')
+                                          callback_data=f'{BUTTON_PREFIX}{query}_{self.name_vs_id.get_id_from_name(element)}')
             if i % 3 == 0:
                 markup.add(button)
             else:
@@ -71,16 +71,16 @@ class Support:
         return markup
 
     def get_children(self, query: str) -> Any:
-        return self.find_trie.get_children(self.GNS.reverse_replace(query))
+        return self.find_trie.get_children(self.name_vs_id.replace_ids_with_names(query))
 
     def get_index(self, query: str) -> Any:
-        return self.find_trie.get_index(self.GNS.reverse_replace(query))
+        return self.find_trie.get_index(self.name_vs_id.replace_ids_with_names(query))
 
     def get_answer(self, query: str) -> Any:
         if query[0:1].isalpha():
             territory_index = self.find_trie.get_index(query)
         else:
-            territory_index = self.find_trie.get_index(self.GNS.reverse_replace(query))
+            territory_index = self.find_trie.get_index(self.name_vs_id.replace_ids_with_names(query))
         data_row_list = self.data_frame.loc[territory_index, :].values.tolist()[1:]
-        result = convert_to_string(self.GNS.reverse_replace(query), data_row_list)
+        result = convert_to_string(self.name_vs_id.replace_ids_with_names(query), data_row_list)
         return result

@@ -7,14 +7,14 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from imports.utils import *
 from imports.config import *
-from imports.NameSystem import NameSystem
+from imports.TwoWayDict import TwoWayDict
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 folder = WORK_FOLDER
 data_frame = None
 find_trie = Trie()
-GNS = NameSystem()  # Global Name System
+GNS = TwoWayDict()
 
 
 def update_data_frame(start: bool = False) -> None:
@@ -73,7 +73,7 @@ def create_standard_markup(query: str, children) -> Any:
     markup = InlineKeyboardMarkup(row_width=3)
     for i in range(0, len(children)):
         element = children[i]
-        button = InlineKeyboardButton(text=element, callback_data=f'{BUTTON_PREFIX}{query}_{GNS.get_forward(element)}')
+        button = InlineKeyboardButton(text=element, callback_data=f'{BUTTON_PREFIX}{query}_{GNS.get_id_from_name(element)}')
         if i % 3 == 0:
             markup.add(button)
         else:
@@ -90,22 +90,22 @@ async def process_callbacks(callback_query: types.CallbackQuery):
                                text='Устаревшая версия кнопок, сотрите историю и начните заново')
         return
     query = callback_query.data[len(BUTTON_PREFIX):].strip('_')
-    children = find_trie.get_children(GNS.reverse_replace(query))
+    children = find_trie.get_children(GNS.replace_ids_with_names(query))
     if len(children) > 0:
         new_markup = create_standard_markup(query, children)
-        await bot.send_message(callback_query.from_user.id, text=GNS.reverse_replace(query), reply_markup=new_markup)
+        await bot.send_message(callback_query.from_user.id, text=GNS.replace_ids_with_names(query), reply_markup=new_markup)
     else:
         reply_markup = create_reply_markup(query)
-        territory_index = find_trie.get_index(GNS.reverse_replace(query))
+        territory_index = find_trie.get_index(GNS.replace_ids_with_names(query))
         data_row_list = data_frame.loc[territory_index, :].values.tolist()[1:]
-        result = convert_to_string(GNS.reverse_replace(query), data_row_list)
+        result = convert_to_string(GNS.replace_ids_with_names(query), data_row_list)
         await bot.send_message(callback_query.from_user.id, text=result, parse_mode='HTML', reply_markup=reply_markup)
 
 
 @dp.message_handler()
 async def echo(message: types.Message):
     """Handling a response to a text query"""
-    reply_markup = create_reply_markup(GNS.forward_replace(message.text))
+    reply_markup = create_reply_markup(GNS.replace_names_with_ids(message.text))
     territory_index = find_trie.get_index(message.text)
     data_row_list = data_frame.loc[territory_index, :].values.tolist()[1:]
     result = convert_to_string('', data_row_list)
