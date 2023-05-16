@@ -1,7 +1,3 @@
-from typing import Any
-import pandas as pd
-from imports.Trie import Trie
-from imports.TwoWayDict import TwoWayDict
 import math
 
 
@@ -47,18 +43,6 @@ def test_convert_to_string():
                   'Быстров-1100%</b>\nПлан-9\nФакт-10 \n<b>Какао Несквик-1400%</b>\nПлан-12\nФакт-13\n<b>Готовые ' \
                   'завтраки-1700%</b>\nПлан-15\nФакт-16 \n<b>Детское питание-2000%</b>\nПлан-18\nФакт-19\n<b>Корм для ' \
                   'животных-2300%</b>\nПлан-21\nФакт-22\n'
-
-
-def get_data_from_file(file_name: str, trie: Trie, global_name_system: TwoWayDict) -> Any:
-    df = pd.read_excel(file_name)
-    del df['Unnamed: 0']
-    del df['Unnamed: 1']
-    del df['DSM']
-    del df['SV']
-    for i in range(1, len(df['МС'])):
-        global_name_system.split_string_and_add(df['МС'][i].strip())
-        trie.insert(df['МС'][i].strip(), i)
-    return df
 
 
 if __name__ == '__main__':

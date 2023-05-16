@@ -1,13 +1,8 @@
 import asyncio
-import os
 import logging
-import sys
-
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from imports.utils import *
+from aiogram.types import InlineKeyboardMarkup
 from imports.config import *
-from imports.TwoWayDict import TwoWayDict
 from imports.Support import Support
 
 bot = Bot(token=TOKEN)
