@@ -17,7 +17,6 @@ find_trie = Trie()
 GNS = NameSystem()  # Global Name System
 
 
-
 def update_data_frame(start: bool = False) -> None:
     """Read data from base file and store it to the trie and to the pandas dataFrame"""
 
@@ -62,15 +61,10 @@ async def show_start(message: types.Message):
     await message.answer(text='Выберите свою территорию или пришлите ее название', reply_markup=new_first_markup)
 
 
-def create_button(text: str, data, button_prefix=BUTTON_PREFIX):
-    button = InlineKeyboardButton(text=text, callback_data=f'{button_prefix}{data}')
-    return button
-
-
 def create_reply_markup(data: str) -> Any:
     """Return an inline keyboard markup with one button"""
     reply_markup = InlineKeyboardMarkup()
-    button = create_button('Повторить последний запрос', data)
+    button = InlineKeyboardButton(text='Повторить последний запрос', callback_data=f'{BUTTON_PREFIX}{data}')
     reply_markup.add(button)
     return reply_markup
 

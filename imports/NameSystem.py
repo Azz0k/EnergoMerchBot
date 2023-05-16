@@ -1,5 +1,6 @@
 import re
 
+
 class NameSystem:
     def __init__(self):
         self.forward = dict()
@@ -18,7 +19,6 @@ class NameSystem:
     def reverse_replace(self, element: str):
         result = [self.get_reverse(x) for x in re.split(self.pattern, element)]
         return '_'.join(result)
-
 
     def add_element(self, element: str):
         if element in self.forward:
