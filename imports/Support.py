@@ -3,7 +3,7 @@ import os
 import logging
 import sys
 from typing import Any
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from imports.utils import *
 from imports.config import *
 from imports.Trie import Trie
@@ -52,7 +52,7 @@ class Support:
                     log_and_exit('Incorrect base file structure')
                 break
 
-    def create_reply_markup(self, data: str) -> Any:
+    def create_repeat_markup(self, data: str) -> Any:
         """Return an inline keyboard markup with one button"""
         reply_markup = InlineKeyboardMarkup()
         if data[0:1].isalpha():
@@ -60,6 +60,12 @@ class Support:
         button = InlineKeyboardButton(text='Повторить последний запрос', callback_data=f'{BUTTON_PREFIX}{data}')
         reply_markup.add(button)
         return reply_markup
+
+    def create_contact_markup(self) -> Any:
+        markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        button = KeyboardButton('Отправить контакт', request_contact=True)
+        markup.add(button)
+        return markup
 
     def create_standard_markup(self, query: str) -> Any:
         markup = InlineKeyboardMarkup(row_width=3)
