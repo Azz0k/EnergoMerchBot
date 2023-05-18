@@ -5,3 +5,4 @@ imports/__pycache__/
 imports/.pytest_cache/
 *.xlsx
 imports/config.py
+*.db
