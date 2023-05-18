@@ -8,7 +8,7 @@ from imports.utils import *
 from imports.config import *
 from imports.Trie import Trie
 from imports.TwoWayDict import TwoWayDict
-
+from imports.Users import Users
 
 class Support:
 
@@ -16,6 +16,7 @@ class Support:
         self.find_trie = Trie()
         self.data_frame = None
         self.name_vs_id = TwoWayDict()
+        self.users = Users()
 
     def get_data_from_file(self, file_name: str) -> Any:
         df = pd.read_excel(file_name)

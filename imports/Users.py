@@ -20,7 +20,7 @@ class Users:
         print(self.execute_query(sqlite_select_query))
 
     def is_phone_number_exists(self, phone_number: str) -> bool:
-        sqlite_select_query = f'SELECT * FROM {self.users_table_name} where phone_number=\'{phone_number}\';'
+        sqlite_select_query = f'SELECT * FROM {self.users_table_name} where phone_number LIKE \'%{phone_number}\';'
         result = self.execute_query(sqlite_select_query)
         if len(result) > 0:
             return True
@@ -35,7 +35,7 @@ class Users:
 
     def update_telegram_id(self, phone_number: str, telegram_id: int) -> None:
         sqlite_update_query = f'UPDATE {self.users_table_name} ' \
-                              f'SET id={telegram_id} WHERE phone_number=\'{phone_number}\';'
+                              f'SET id={telegram_id} WHERE phone_number LIKE \'%{phone_number}\';'
         self.execute_query_with_commit(sqlite_update_query)
 
     def insert_number(self, phone_number: str) -> None:
@@ -47,8 +47,8 @@ class Users:
 
     def execute_query(self, query: str) -> Any:
         result = ''
+        database = sqlite3.connect(self.users_database_name)
         try:
-            database = sqlite3.connect(self.users_database_name)
             cursor = database.cursor()
             cursor.execute(query)
             result = cursor.fetchall()
@@ -60,8 +60,8 @@ class Users:
             return result
 
     def execute_query_with_commit(self, query: str) -> None:
+        database = sqlite3.connect(self.users_database_name)
         try:
-            database = sqlite3.connect(self.users_database_name)
             cursor = database.cursor()
             cursor.execute(query)
             database.commit()
@@ -74,7 +74,8 @@ class Users:
 
 if __name__ == '__main__':
     base = Users()
-    base.create_database()
+    base.users_database_name = '..\\users.db'
+    #base.create_database()
     #base.insert_number('')
-    #base.list_database()
+    base.list_database()
     #print(base.is_phone_number_exists())
