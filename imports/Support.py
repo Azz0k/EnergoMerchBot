@@ -8,7 +8,8 @@ from imports.utils import *
 from imports.config import *
 from imports.Trie import Trie
 from imports.TwoWayDict import TwoWayDict
-from imports.Users import Users
+from imports.Users_mssql import Users
+
 
 class Support:
 
@@ -105,5 +106,3 @@ class Support:
 
     def replace_ids_with_names(self, query: str):
         return self.name_vs_id.replace_ids_with_names(query)
-
-
