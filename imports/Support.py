@@ -91,7 +91,7 @@ class Support:
     def get_index(self, query: str) -> Any:
         return self.find_trie.get_index(self.name_vs_id.replace_ids_with_names(query))
 
-    def get_answer(self, query: str) -> Any:
+    def get_answer(self, query: str) -> str:
         territory_name = query
         if query[0:1].isalpha():
             territory_index = self.find_trie.get_index(query)
@@ -104,5 +104,7 @@ class Support:
         result = convert_to_string(territory_name, data_row_list)
         return result
 
+    def get_message_from_b24(self, telegram_id: int) -> str:
+        return self.users.get_link_by_telegram_id(telegram_id)
     def replace_ids_with_names(self, query: str):
         return self.name_vs_id.replace_ids_with_names(query)

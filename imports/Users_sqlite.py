@@ -17,7 +17,7 @@ class Users:
 
     def list_database(self):
         sqlite_select_query = f'SELECT * FROM {self.users_table_name};'
-        print(self.execute_query(sqlite_select_query))
+        return [x for x in self.execute_query(sqlite_select_query)]
 
     def is_phone_number_exists(self, phone_number: str) -> bool:
         sqlite_select_query = f'SELECT * FROM {self.users_table_name} where phone_number LIKE \'%{phone_number}\';'
@@ -37,6 +37,8 @@ class Users:
         sqlite_update_query = f'UPDATE {self.users_table_name} ' \
                               f'SET id={telegram_id} WHERE phone_number LIKE \'%{phone_number}\';'
         self.execute_query_with_commit(sqlite_update_query)
+
+
 
     def insert_number(self, phone_number: str) -> None:
         sqlite_insert_query = f'''INSERT INTO {self.users_table_name}
