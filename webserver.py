@@ -22,6 +22,7 @@ def get_user_id(phone_number: str):
 @app.post('/api/user/<phone_number>')
 def create_user_and_add_link(phone_number: str):
     link = request.form['link']
+    print(link)
     if users.is_phone_number_exists(phone_number):
         users.update_link(phone_number, link)
     else:
