@@ -42,8 +42,6 @@ async def contact(message: types.Message):
             new_first_markup = support.create_standard_markup('')
             await message.answer(text=f'Здравствуйте, {message.contact.first_name}',
                                  reply_markup=aiogram.types.ReplyKeyboardRemove())
-            message_from_b24 = support.get_message_from_b24(message.from_user.id)
-            await message.answer(text=message_from_b24, parse_mode='HTML')
             await message.answer(text='Выберите свою территорию или пришлите ее название',
                                  reply_markup=new_first_markup)
         else:
@@ -68,8 +66,7 @@ async def process_callbacks(callback_query: types.CallbackQuery):
         text = support.get_answer(query)
         markup = support.create_repeat_markup(query)
         await bot.send_message(callback_query.from_user.id, text=text, parse_mode='HTML', reply_markup=markup)
-        message_from_b24 = support.get_message_from_b24(callback_query.from_user.id)
-        await bot.send_message(callback_query.from_user.id, parse_mode='HTML', text=message_from_b24)
+
 
 
 @dp.message_handler()
@@ -81,8 +78,6 @@ async def echo(message: types.Message):
         if text != NOT_FOUND_ANSWER:
             markup = support.create_repeat_markup(message.text)
         await message.answer(text=text, parse_mode='HTML', reply_markup=markup)
-        message_from_b24 = support.get_message_from_b24(message.from_user.id)
-        await message.answer(text=message_from_b24, parse_mode='HTML')
     else:
         markup = support.create_contact_markup()
         await message.answer(text=GREETING_TEXT, reply_markup=markup)
