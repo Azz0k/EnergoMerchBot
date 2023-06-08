@@ -18,9 +18,33 @@ class Support:
         self.data_frame = None
         self.name_vs_id = TwoWayDict()
         self.users = Users()
+        self.xsl_file_name = ''
+
+    def get_file_name(self):
+        files_list = []
+        files_dict = {}
+        for root, dirs, files in os.walk(WORK_FOLDER):
+            if root.find('архив') > -1:
+                continue
+            for name in files:
+                if not name[:1].isdigit():
+                    continue
+                if not name.endswith('.xlsb'):
+                    continue
+                # print(os.path.join(root, name))
+                files_list.append(name)
+                files_dict[name] = os.path.join(root, name)
+        files_list.sort(key=lambda x: int(x[3:5]))
+        last_element = len(files_list) - 1
+        result = files_dict[files_list[last_element]]
+        if self.xsl_file_name != result:
+            logging.log(logging.INFO, 'Xls file changed:')
+            logging.log(logging.INFO, result)
+            self.xsl_file_name = result
+        return result
 
     def get_data_from_file(self, file_name: str) -> Any:
-        df = pd.read_excel(file_name)
+        df = pd.read_excel(file_name, sheet_name='МС')
         trie = Trie()
         del df['Unnamed: 0']
         del df['Unnamed: 1']
@@ -40,19 +64,13 @@ class Support:
             if start:
                 sys.exit(message)
 
-        files = []
         root = None
-        for root, dirs, files in os.walk(WORK_FOLDER):
-            break
-        for file in files:
-            if file.endswith('.xlsx'):
-                try:
-                    self.find_trie = self.get_data_from_file(os.path.join(root, file))
-                except OSError:
-                    log_and_exit('Base file not accessible!!!')
-                except KeyError:
-                    log_and_exit('Incorrect base file structure')
-                break
+        try:
+            self.find_trie = self.get_data_from_file(self.get_file_name())
+        except OSError:
+            log_and_exit('Base file not accessible!!!')
+        except KeyError:
+            log_and_exit('Incorrect base file structure')
 
     def create_repeat_markup(self, data: str) -> Any:
         """Return an inline keyboard markup with one button"""
@@ -106,5 +124,10 @@ class Support:
 
     def get_message_from_b24(self, telegram_id: int) -> str:
         return self.users.get_link_by_telegram_id(telegram_id)
+
     def replace_ids_with_names(self, query: str):
         return self.name_vs_id.replace_ids_with_names(query)
+
+
+if __name__ == '__main__':
+    pass

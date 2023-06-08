@@ -4,5 +4,6 @@ venv/
 imports/__pycache__/
 imports/.pytest_cache/
 *.xlsx
+*.xlsb
 imports/config.py
 *.db
