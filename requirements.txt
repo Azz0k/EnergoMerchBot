@@ -1,0 +1,4 @@
+pandas
+aiogram
+pyodbc
+Flask
