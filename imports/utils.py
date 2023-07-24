@@ -2,7 +2,7 @@ import math
 
 
 def convert_to_string(name, arg_list: list) -> str:
-    arg_list = [0 if math.isnan(x) else x for x in arg_list]
+    arg_list = [0 if type(x) == str else 0 if math.isnan(x) else x for x in arg_list]
     arg_list.append(name)
     result = """
 <b>{24}</b>

@@ -47,12 +47,13 @@ class Support:
         df = pd.read_excel(file_name, sheet_name='МС')
         trie = Trie()
         del df['Unnamed: 0']
-        del df['Unnamed: 1']
         del df['DSM']
         del df['SV']
         for i in range(1, len(df['МС'])):
-            self.name_vs_id.split_string_and_add(df['МС'][i].strip())
-            trie.insert(df['МС'][i].strip(), i)
+            if df['Unnamed: 1'][i].strip().upper().startswith('П'):
+                self.name_vs_id.split_string_and_add(df['МС'][i].strip())
+                trie.insert(df['МС'][i].strip(), i)
+        del df['Unnamed: 1']
         self.data_frame = df
         return trie
 
@@ -129,5 +130,27 @@ class Support:
         return self.name_vs_id.replace_ids_with_names(query)
 
 
+def import_from_file():
+    merch = pd.read_excel(r'C:\temp\Мерчи.xlsx')
+    users = Users()
+    for c in merch['Phone'].values:
+        c = str(c)
+        c = c.replace(' ', '')
+        c = c.replace('(', '')
+        c = c.replace(')', '')
+        c = c.replace('-', '')
+        if c.startswith('8'):
+            c = '+7' + c[1:]
+        if c.startswith('9'):
+            c = '+7' + c
+        if c.startswith('7'):
+            c = '+' + c
+        if not users.is_phone_number_exists(c):
+            users.insert_number(c)
+            print(f'{c} - добавлено')
+        else:
+            print(f'{c} - уже есть в базе')
+
+
 if __name__ == '__main__':
-    pass
+    import_from_file()

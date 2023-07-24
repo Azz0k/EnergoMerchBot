@@ -2,3 +2,4 @@ pandas
 aiogram
 pyodbc
 Flask
+pyxlsb

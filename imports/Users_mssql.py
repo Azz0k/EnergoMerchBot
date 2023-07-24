@@ -89,5 +89,6 @@ class Users:
 
 
 if __name__ == '__main__':
-    base = Users()
-    # print(base.get_telegram_id_by_phone_number(''))
+    pass
+
+
