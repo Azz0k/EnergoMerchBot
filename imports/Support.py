@@ -120,6 +120,7 @@ class Support:
             territory_index = self.find_trie.get_index(self.name_vs_id.replace_ids_with_names(query))
             territory_name = self.name_vs_id.replace_ids_with_names(query)
         data_row_list = self.data_frame.loc[territory_index, :].values.tolist()[1:]
+        logging.log(logging.INFO, territory_name)
         result = convert_to_string(territory_name, data_row_list)
         return result
 
