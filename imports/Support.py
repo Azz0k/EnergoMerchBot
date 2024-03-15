@@ -26,6 +26,10 @@ class Support:
         for root, dirs, files in os.walk(WORK_FOLDER):
             if root.find('архив') > -1:
                 continue
+            if root.find('планирование') > -1:
+                continue
+            if root.find('потенциал') > -1:
+                continue
             for name in files:
                 if not name[:1].isdigit():
                     continue
@@ -46,14 +50,17 @@ class Support:
     def get_data_from_file(self, file_name: str) -> Any:
         df = pd.read_excel(file_name, sheet_name='МС')
         trie = Trie()
-        del df['Unnamed: 0']
-        del df['DSM']
-        del df['SV']
-        for i in range(1, len(df['МС'])):
-            if df['Unnamed: 1'][i].strip().upper().startswith('П'):
-                self.name_vs_id.split_string_and_add(df['МС'][i].strip())
-                trie.insert(df['МС'][i].strip(), i)
+        #del df['DSM']
+        #del df['SV']
+        for i in range(1, len(df.iloc[:, 4])):
+            if isinstance(df['Unnamed: 1'][i], str) and df['Unnamed: 1'][i].strip().upper().startswith('П'):
+                if pd.isna(df.iloc[:, 4][i]):
+                    continue
+                self.name_vs_id.split_string_and_add(df.iloc[:, 4][i].strip())
+                trie.insert(df.iloc[:, 4][i].strip(), i)
         del df['Unnamed: 1']
+        del df['Unnamed: 0']
+        del df['Unnamed: 2']
         self.data_frame = df
         return trie
 
@@ -119,7 +126,7 @@ class Support:
         else:
             territory_index = self.find_trie.get_index(self.name_vs_id.replace_ids_with_names(query))
             territory_name = self.name_vs_id.replace_ids_with_names(query)
-        data_row_list = self.data_frame.loc[territory_index, :].values.tolist()[1:]
+        data_row_list = self.data_frame.loc[territory_index, :].values.tolist()[2:]
         logging.log(logging.INFO, territory_name)
         result = convert_to_string(territory_name, data_row_list)
         return result
